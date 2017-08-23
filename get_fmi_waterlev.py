@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 # Purpose of code is to retrieve FMI Open Data sea level measurements. The service is provided by Finnish
 # Meteorological Institute and you can view their product descriptions, lincences etc
@@ -6,7 +7,7 @@
 # needed for this code to work. The service restricts how much you can retrieve data at a single time, in 5 minutes and how much
 # you can retrieve with single key within one day.
 # Instruction on how to use the code (will someday be)HERE
-# get_fmi_waterlev start end
+# get_fmi_open_waterlev start end
 # Program written by Sanna Särkikoski 21.8.2017
 # Partly copied from Olli Wilkmans similar code for retrieving temperature observations:
 # https://github.com/dronir/PythonClass/blob/master/FMI%20open%20data%20API%20example.ipynb
@@ -16,19 +17,31 @@
 
 import sys
 import datetime
+import argparse
 from urllib import request
 import xml.etree.ElementTree as ET
+from tgread_xml import xml_to_txt
 
-def get_time_interval():
-    # At the moment only with user input, exits if wrong
-    # In future: resume from last asignment, 5 min break possibility??
-    # User input option
-    d_start=[int(i) for i in (sys.argv[1:4])]
-    d_end=  [int(i) for i in (sys.argv[4:7])]
+def parseArguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("start_y", help="Start year", type=int)
+    parser.add_argument("start_m", help="Start month", type=int)
+    parser.add_argument("start_d", help="Start day", type=int)
 
-    date_s=datetime.date(d_start[0],d_start[1],d_start[2])  # Needs to be individual numbers, can't be a list
-    date_e=datetime.date(d_end[0],d_end[1],d_end[2])
-    return date_s, date_e;
+    parser.add_argument("end_y", help="End year", type=int)
+    parser.add_argument("end_m", help="End month", type=int)
+    parser.add_argument("end_d", help="End day", type=int)
+
+    # Optional arguments
+    parser.add_argument("folder_name", help="Folder name for output", default="Data", nargs='?')
+
+    # Print version
+    parser.add_argument("--version", action="version", version='%(prog)s - Version 1.0')
+
+    # Parse arguments
+    args = parser.parse_args()
+
+    return args;
 
 def check_time_interval(d_start, d_end):
     # Checking that the time interval makes sense and is okey for data retrieval restrictions
@@ -61,21 +74,35 @@ def make_message(times):
                 '::timevaluepair&starttime={}&endtime={}'.format(API_key,start_time,end_time)
     return message;
 
-def retrieve_data(message,date_inter):                  # Jokin tässä ei toimi vaikka printed message on ok
+def retrieve_data(message):                  # Jokin tässä ei toimi vaikka printed message on ok
     XMLdata = request.urlopen(message).read()
     XMLTree = ET.fromstring(XMLdata)
-    #print(message)
+    print('Retrieve success')
 
-    return;
+    return XMLTree;
 
-date_start= get_time_interval()[0]
-date_end=   get_time_interval()[1]                  # Dates can change order, that's why changed names, I know clumsy..
-date_inter=check_time_interval(date_start, date_end)
-fmi_message=make_message(date_inter)
-print(fmi_message)
-retrieve_data(fmi_message, date_inter)
+def main():
+    args = parseArguments()
+    date_start = datetime.date(args.start_y, args.start_m, args.start_d)
+    date_end = datetime.date(args.end_y, args.end_m, args.end_d)
 
-time_lim=datetime.timedelta(days=7)
+    # HERE LOOPS FOR RETRIEVAL
+    date_inter=check_time_interval(date_start, date_end)
+    fmi_message=make_message(date_inter)
+    print(fmi_message)
+    #XMLData=retrieve_data(fmi_message)
+# if os.path.exists('Data'):   # Folder name by user?
+#     answer = input(" Folder 'Data' exist and may have files that will be re-written do you want to continue Y/N?")
+#     if answer=='No' or aswer=='no' or aswer=='N' or aswer=='n':
+#         answer2=input("Would you like to make new folder? Y/N")
+#         if answer2=='No' or aswer=='no' or aswer=='N' or aswer=='n':
+#             exit()
+#         else:
+#             aswer
+    #xml_to_txt(XMLData,'Data')
+    kk = open('w_lev_test.xml', 'r')                # REMOVE THIS::: ONLY TEST
+    xml_to_txt(kk, args.folder_name)
+    time_lim=datetime.timedelta(days=7)
 
 # while (date_end-date_start)>=time_lim:                    # Opend Data can be searched only 1 week at the time
 #     if (date_end-date_start)==time_lim:
@@ -88,4 +115,8 @@ time_lim=datetime.timedelta(days=7)
 #
 #
 
+    # How to video https://www.youtube.com/watch?v=9X0i5yOvR_o on parsing .xml
+    return;
 
+if __name__ == '__main__':
+    main()
