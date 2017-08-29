@@ -6,7 +6,7 @@
 # needed for this code to work. The service restricts how much you can retrieve data at a single time, in 5 minutes and how much
 # you can retrieve with single key within one day.
 # Instruction on how to use the code (will someday be)HERE
-# get_fmi_waterlev start end
+# get_fmi_open_waterlev start end
 # Program written by Sanna Särkikoski 21.8.2017
 # Partly copied from Olli Wilkmans similar code for retrieving temperature observations:
 # https://github.com/dronir/PythonClass/blob/master/FMI%20open%20data%20API%20example.ipynb
@@ -18,6 +18,7 @@ import sys
 import datetime
 from urllib import request
 import xml.etree.ElementTree as ET
+from tgread_xml import xml_to_txt
 
 def get_time_interval():
     # At the moment only with user input, exits if wrong
@@ -61,19 +62,21 @@ def make_message(times):
                 '::timevaluepair&starttime={}&endtime={}'.format(API_key,start_time,end_time)
     return message;
 
-def retrieve_data(message,date_inter):                  # Jokin tässä ei toimi vaikka printed message on ok
+def retrieve_data(message):                  # Jokin tässä ei toimi vaikka printed message on ok
     XMLdata = request.urlopen(message).read()
     XMLTree = ET.fromstring(XMLdata)
-    #print(message)
+    print('Retrieve success')
 
-    return;
+    return XMLTree;
 
 date_start= get_time_interval()[0]
 date_end=   get_time_interval()[1]                  # Dates can change order, that's why changed names, I know clumsy..
+# HERE LOOPS FOR RETRIEVAL
 date_inter=check_time_interval(date_start, date_end)
 fmi_message=make_message(date_inter)
 print(fmi_message)
-retrieve_data(fmi_message, date_inter)
+XMLData=retrieve_data(fmi_message)
+xml_to_txt(XMLData,'Data')
 
 time_lim=datetime.timedelta(days=7)
 
@@ -89,3 +92,30 @@ time_lim=datetime.timedelta(days=7)
 #
 
 
+#Maybe like:
+# XMLTree.ET("index.xhtml") <Element 'html' at 0xb77e6fac> # Mitäköhän tekee
+# p = tree.find("body/p")
+
+# kk=open('feb1.xml','r')
+# for ll in kk:
+#     lll = ll.strip().split('>')
+#     if '<gml:name>' in ll:
+#         name= lll[1].split()[0]
+#         #outfile=open(name+'.testfile','w')
+#         outfile=open(name+'.txt','w')
+#         outfile.write('Station '+name+'\n')
+#     if  '<gml:pos>' in ll:
+#         lat=lll[1].split()[0]
+#         lon=lll[1].split()[1]
+#         outfile.write('Latitude '+lat+'\n')
+#         outfile.write('Longitude '+lon+'\n')
+#         outfile.write('--------------\n')
+#     if '<wml2:time>' in ll:
+#         date= lll[1][0:10]
+#         time=lll[1][11:16]
+#         outfile.write(date+' '+time)
+#     if 'value' in ll:
+#         outfile.write(' '+ lll[1].split('<')[0]+'\n' )
+# outfile.close()
+
+# How to video https://www.youtube.com/watch?v=9X0i5yOvR_o on parsing .xml
