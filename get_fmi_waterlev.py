@@ -81,10 +81,20 @@ def retrieve_data(message):                  # Jokin tässä ei toimi vaikka pri
 
     return XMLTree;
 
+# get_fmi_open.py-to-using-argparse
 def main():
     args = parseArguments()
     date_start = datetime.date(args.start_y, args.start_m, args.start_d)
     date_end = datetime.date(args.end_y, args.end_m, args.end_d)
+#=======
+date_start= get_time_interval()[0]
+date_end=   get_time_interval()[1]                  # Dates can change order, that's why changed names, I know clumsy..
+# HERE LOOPS FOR RETRIEVAL
+date_inter=check_time_interval(date_start, date_end)
+fmi_message=make_message(date_inter)
+print(fmi_message)
+XMLData=retrieve_data(fmi_message)
+xml_to_txt(XMLData,'Data')
 
     # HERE LOOPS FOR RETRIEVAL
     date_inter=check_time_interval(date_start, date_end)
@@ -118,5 +128,35 @@ def main():
     # How to video https://www.youtube.com/watch?v=9X0i5yOvR_o on parsing .xml
     return;
 
+# get_fmi_open.py-to-using-argparse
 if __name__ == '__main__':
     main()
+=======
+#Maybe like:
+# XMLTree.ET("index.xhtml") <Element 'html' at 0xb77e6fac> # Mitäköhän tekee
+# p = tree.find("body/p")
+
+# kk=open('feb1.xml','r')
+# for ll in kk:
+#     lll = ll.strip().split('>')
+#     if '<gml:name>' in ll:
+#         name= lll[1].split()[0]
+#         #outfile=open(name+'.testfile','w')
+#         outfile=open(name+'.txt','w')
+#         outfile.write('Station '+name+'\n')
+#     if  '<gml:pos>' in ll:
+#         lat=lll[1].split()[0]
+#         lon=lll[1].split()[1]
+#         outfile.write('Latitude '+lat+'\n')
+#         outfile.write('Longitude '+lon+'\n')
+#         outfile.write('--------------\n')
+#     if '<wml2:time>' in ll:
+#         date= lll[1][0:10]
+#         time=lll[1][11:16]
+#         outfile.write(date+' '+time)
+#     if 'value' in ll:
+#         outfile.write(' '+ lll[1].split('<')[0]+'\n' )
+# outfile.close()
+
+# How to video https://www.youtube.com/watch?v=9X0i5yOvR_o on parsing .xml
+
