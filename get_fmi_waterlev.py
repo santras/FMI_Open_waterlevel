@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 # Purpose of code is to retrieve FMI Open Data sea level measurements. The service is provided by Finnish
 # Meteorological Institute and you can view their product descriptions, lincences etc
@@ -16,20 +17,31 @@
 
 import sys
 import datetime
+import argparse
 from urllib import request
 import xml.etree.ElementTree as ET
 from tgread_xml import xml_to_txt
 
-def get_time_interval():
-    # At the moment only with user input, exits if wrong
-    # In future: resume from last asignment, 5 min break possibility??
-    # User input option
-    d_start=[int(i) for i in (sys.argv[1:4])]
-    d_end=  [int(i) for i in (sys.argv[4:7])]
+def parseArguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("start_y", help="Start year", type=int)
+    parser.add_argument("start_m", help="Start month", type=int)
+    parser.add_argument("start_d", help="Start day", type=int)
 
-    date_s=datetime.date(d_start[0],d_start[1],d_start[2])  # Needs to be individual numbers, can't be a list
-    date_e=datetime.date(d_end[0],d_end[1],d_end[2])
-    return date_s, date_e;
+    parser.add_argument("end_y", help="End year", type=int)
+    parser.add_argument("end_m", help="End month", type=int)
+    parser.add_argument("end_d", help="End day", type=int)
+
+    # Optional arguments
+    parser.add_argument("folder_name", help="Folder name for output", default="Data", nargs='?')
+
+    # Print version
+    parser.add_argument("--version", action="version", version='%(prog)s - Version 1.0')
+
+    # Parse arguments
+    args = parser.parse_args()
+
+    return args;
 
 def check_time_interval(d_start, d_end):
     # Checking that the time interval makes sense and is okey for data retrieval restrictions
@@ -69,6 +81,12 @@ def retrieve_data(message):                  # Jokin tässä ei toimi vaikka pri
 
     return XMLTree;
 
+# get_fmi_open.py-to-using-argparse
+def main():
+    args = parseArguments()
+    date_start = datetime.date(args.start_y, args.start_m, args.start_d)
+    date_end = datetime.date(args.end_y, args.end_m, args.end_d)
+#=======
 date_start= get_time_interval()[0]
 date_end=   get_time_interval()[1]                  # Dates can change order, that's why changed names, I know clumsy..
 # HERE LOOPS FOR RETRIEVAL
@@ -78,7 +96,23 @@ print(fmi_message)
 XMLData=retrieve_data(fmi_message)
 xml_to_txt(XMLData,'Data')
 
-time_lim=datetime.timedelta(days=7)
+    # HERE LOOPS FOR RETRIEVAL
+    date_inter=check_time_interval(date_start, date_end)
+    fmi_message=make_message(date_inter)
+    print(fmi_message)
+    #XMLData=retrieve_data(fmi_message)
+# if os.path.exists('Data'):   # Folder name by user?
+#     answer = input(" Folder 'Data' exist and may have files that will be re-written do you want to continue Y/N?")
+#     if answer=='No' or aswer=='no' or aswer=='N' or aswer=='n':
+#         answer2=input("Would you like to make new folder? Y/N")
+#         if answer2=='No' or aswer=='no' or aswer=='N' or aswer=='n':
+#             exit()
+#         else:
+#             aswer
+    #xml_to_txt(XMLData,'Data')
+    kk = open('w_lev_test.xml', 'r')                # REMOVE THIS::: ONLY TEST
+    xml_to_txt(kk, args.folder_name)
+    time_lim=datetime.timedelta(days=7)
 
 # while (date_end-date_start)>=time_lim:                    # Opend Data can be searched only 1 week at the time
 #     if (date_end-date_start)==time_lim:
@@ -91,7 +125,13 @@ time_lim=datetime.timedelta(days=7)
 #
 #
 
+    # How to video https://www.youtube.com/watch?v=9X0i5yOvR_o on parsing .xml
+    return;
 
+# get_fmi_open.py-to-using-argparse
+if __name__ == '__main__':
+    main()
+=======
 #Maybe like:
 # XMLTree.ET("index.xhtml") <Element 'html' at 0xb77e6fac> # Mitäköhän tekee
 # p = tree.find("body/p")
@@ -119,3 +159,4 @@ time_lim=datetime.timedelta(days=7)
 # outfile.close()
 
 # How to video https://www.youtube.com/watch?v=9X0i5yOvR_o on parsing .xml
+
