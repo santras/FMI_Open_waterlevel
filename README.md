@@ -1,6 +1,6 @@
 Read me get_fmi_open.py
 
-#Purpose of code is to retrieve FMI Open Data sea level measurements.The service is provided by Finnish Meteorological Institute and you can view their product descriptions, lincences etc https://en.ilmatieteenlaitos.fi/open-data. This is where you also need to register in order to get a API key needed for this code to work. Save your api key as a FMI_OpenData_Key.txt before running the program.
+Purpose of code is to retrieve FMI Open Data sea level measurements.The service is provided by Finnish Meteorological Institute and you can view their product descriptions, lincences etc https://en.ilmatieteenlaitos.fi/open-data. This is where you also need to register in order to get a API key needed for this code to work. Save your api key as a FMI_OpenData_Key.txt before running the program.
 The FMI Open Data service have some restriction on how much you can download at a time.
 
 Usage:
