@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-#Contains functions filexml_to_txt(file_name) and xml_to_txt(data). Writes outputfiles with station name as
-# the txt file name.
+# Big part of this code was given to me for use.. I have modifield it somewhat for my own puposes. It is for FMI Open Data
+# and spesifically for mareograph observations. At the moment the use is to take a .xml file and then write it to a text file.
+# However in the future, idea would be that no saving of .xml file would be needed.
+
 import os
 
 def filexml_to_txt(file_name):
@@ -10,14 +12,16 @@ def filexml_to_txt(file_name):
     return
 
 def check_outfile(name):
+    # check if outfile exist or not
     if os.path.exists(name):
-        file_notexist=False
+        file_exist=False
     else:
-        file_notexist=True
-    #print(name)
-    return file_notexist
+        file_exist=True
+    return file_exist
 
 def xml_to_txt(data, folder_path=None):
+    # Funtion takes .xml file and parses it to .txt files. The output txt files names are the mareograph names from the
+    # input .xml file. This code works for FMI OPEN DATA Sea Level data.
     asi=0
     if folder_path==None:
         folder_path=[]
@@ -25,24 +29,17 @@ def xml_to_txt(data, folder_path=None):
     else:
         folder_make(folder_path)
 
-    #Funtion takes .xml file and parses it to .txt files. The output txt files names are the mareograph names from the
-    # input .xml file. This code works for FMI OPEN DATA Sea Level data. It's only tested with all mareographs, should
-    # later be checked also if works if only some mareopgraphs are chose.
     for ll in data:
         lll = ll.strip().split('>')
         if '<gml:name>' in ll:
             name= lll[1].split()[0]
-            #outfile=open(name+'.testfile','w')
-            #outfile=open(+name+'.txt','w')
             if asi==1:
                 dummy_name="{}.txt".format(name)
             else:
                 dummy_name="{}\{}.txt".format(folder_path,name)
-            #print(dummy_name)
             # This is added to make sure data is not ovewritten
             is_new_file=check_outfile(dummy_name)
-            #print(is_new_file)
-            if (is_new_file):                           # 2 ways of opening, new and adding
+            if (is_new_file):                           # 2 ways of opening, new folder and adding to existing files
                 outfile=open(dummy_name,'w')
                 outfile.write('Station '+name+'\n')
             else:

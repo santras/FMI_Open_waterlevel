@@ -4,34 +4,18 @@
 # Purpose of code is to retrieve FMI Open Data sea level measurements. The service is provided by Finnish
 # Meteorological Institute and you can view their product descriptions, lincences etc
 # https://en.ilmatieteenlaitos.fi/open-data. This is where you also need to register in order to get a API key
-# needed for this code to work. The service restricts how much you can retrieve data at a single time, in 5 minutes and how much
-# you can retrieve with single key within one day.
-# Instruction on how to use the code (will someday be)HERE
-# get_fmi_open_waterlev start end output_folder_name
-# Program written by Sanna Särkikoski 21.8.2017
-# Partly copied from Olli Wilkmans similar code for retrieving temperature observations:
-# https://github.com/dronir/PythonClass/blob/master/FMI%20open%20data%20API%20example.ipynb
+# needed for this code to work. Save your api key as a FMI_OpenData_Key.txt before running the program.
+# The FMI Open Data service have some restriction on how much you can download at a time.
+# Usage:
+# get_fmi_open_waterlev start_time end_time output_folder_name
+# Usage Example: python get_fmi_sealevels.py 2001 01 01 2001 01 01 FMIdata > retrieve_info.txt
+# Program written by Sanna Särkikoski 30.8.2017 with Python 3.6.1, updated 4.9.2017.
+# Notice: The firewall at Maanmittauslaitos is very likely blocking the download so if you repeatedly have problems,
+# you may need to check if you can download normally for example using your home connection.
 
-# This is a crude first version... will be made prettier later and hopefully more easy to use
-# Need to actually test the limitations 7 days at a time =TRUE
-# Seems to limit ~9 years at a time, maybe test 10 tomorrow or later today
-# (25 days in 5 min, ~2 years a day not true)
-
-
-#  Progress: Code should work okey with less than 7 days time periods, next to get not to override if over 7 days
-#  Interestingly the 21 days doesen't seem to be a thing, maybe 2 years could be retrievd at once, if not maybe month at a time then 5 min
-#  1 Year seemed to work okey... so did 2 years
-#  python get_fmi_sealevels.py 1971 01 01 1979 12 31 FMIdata1971_1979 > retrieve_info.txt
-#  NEXT TEST: python get_fmi_sealevels.py 1980 01 01 1989 12 31 FMIdata1980_1989 > retrieve_info2.txt
-#  NEXT TEST: python get_fmi_sealevels.py 1990 01 01 1999 12 31 FMIdata1990_1999 > retrieve_info3.txt
-#  NEXT TEST: python get_fmi_sealevels.py 2000 01 01 2009 12 31 FMIdata2000_2009 > retrieve_info4.txt
-# NEXT TEST: python get_fmi_sealevels.py 2010 01 01 2017 8 30 FMIdata2010_2017 > retrieve_info5.txt
-# Next after this, calculate into actual 2000 height from mean water heights and put into one big file?
 
 import argparse
 import datetime
-#import xml.etree.ElementTree as ET
-#from urllib import request
 import requests
 import os
 
@@ -86,7 +70,7 @@ def check_time_interval(d_start, d_end):
     return d_start, d_end
 
 def check_folder(folder_name):
-    if os.path.exists(folder_name):   # Folder name by user?
+    if os.path.exists(folder_name):   # Folder name by user
         answer = input(" Folder allready exist. If outputfiles exist, they will be appended.  Would you like to rethink "
                        "this? (Y = Make a new folder or exit program) ")
         if answer=='Yes' or answer=='yes' or answer=='y' or answer=='Y':
@@ -102,7 +86,7 @@ def check_folder(folder_name):
 
 def make_message(time_s,time_e):
     # Puts together the string to use for data retrieval
-    start_time='{}T00:00:00Z'.format(time_s)      ##### Improvement: Input could include time of day as well
+    start_time='{}T00:00:00Z'.format(time_s)
     end_time='{}T23:00:00Z'.format(time_e)
     API_key = open("FMI_OpenData_Key.txt","r").read().strip()
     message =   'http://data.fmi.fi/fmi-apikey/{}/wfs?request=getFeature&storedquery_id=fmi::observations::mareograph' \
@@ -111,8 +95,7 @@ def make_message(time_s,time_e):
     return message
 
 def retrieve_data(message):
-    # Retrieves data from the open data service                 #### Not the most elegant way of doing this.. but should work
-    # How to from https://pybit.es/download-xml-file.html
+    # Retrieves data from the open data service
     retreave_ok=True
     try:
         response = requests.get(message)
@@ -128,40 +111,32 @@ def loop_retrievals(date_start,date_end,folder_name):
     question=True
     while (question==True):
         if (date_end+datetime.timedelta(days=1)- date_start) <= (datetime.timedelta(days=7)):
-            #print('Searching from {} to {}. '.format(date_start,date_end))
             fmi_message=make_message(date_start,date_end)
             ret_ok=retrieve_data(fmi_message)
             kk = open('feed.xml', 'r')
             xml_to_txt(kk,folder_name)
             kk.close()
-            #print('Here 1')
             question=False
         else:
             date_search=(date_start+datetime.timedelta(days=6))
-            #print('Searching from {} to {}. '.format(date_start,date_search))
             fmi_message=make_message(date_start,date_search)
             ret_ok=retrieve_data(fmi_message)
             kk = open('feed.xml', 'r')
             xml_to_txt(kk,folder_name)
             kk.close()
             date_start=(date_search+datetime.timedelta(days=1))
-            #print('Here 2')
         if ret_ok==False:
                 print('Search from {} to {} failed. '.format(date_start,date_end))
 def main():
     # Makes the whole thing to be able to be called from another script
-
     args = parseArguments()
     folder_name_ok=check_folder(args.folder_name)
-    date_start0 = datetime.date(args.start_y, args.start_m, args.start_d)   # date_start0 date_end0 untested if okey
+    date_start0 = datetime.date(args.start_y, args.start_m, args.start_d)
     date_end0 = datetime.date(args.end_y, args.end_m, args.end_d)
-
-    # HERE LOOPS FOR RETRIEVAL
     [date_start1,date_end1]=check_time_interval(date_start0, date_end0)
+    # Here looping retrievals
     loop_retrievals(date_start1,date_end1,folder_name_ok)
-
     return
 
 if __name__ == '__main__':
     main()
-
