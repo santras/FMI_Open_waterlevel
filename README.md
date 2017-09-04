@@ -4,7 +4,9 @@ Read me get_fmi_open.py
 The FMI Open Data service have some restriction on how much you can download at a time.
 
 Usage:
+
 get_fmi_open_waterlev start_time end_time output_folder_name
+
 Usage Example: python get_fmi_sealevels.py 2001 01 01 2001 01 01 FMIdata > retrieve_info.txt
 
 Program written by Sanna Särkikoski 30.8.2017 with Python 3.6.1, updated 4.9.2017.Notice: Some firewalls (company, government) may be blocking the download with get from requests so if you repeatedly have problems, you may need to check if you can download normally for example using your home connection. 
