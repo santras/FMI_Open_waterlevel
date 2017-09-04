@@ -1,5 +1,4 @@
 # FMI_Open_waterlevel
-Trying to get my hands on the FMI Open Data Mareograph data
+Program to access FMI Open Data Sea Level Measurements
 
-Working progress..
-Problems: Some reason the data request part is not functioning...
+
