@@ -1,29 +1,30 @@
 Read me get_fmi_open.py
 
-# Purpose of code is to retrieve FMI Open Data sea level measurements. The service is provided by Finnish
-# Meteorological Institute and you can view their product descriptions, lincences etc
-# https://en.ilmatieteenlaitos.fi/open-data. This is where you also need to register in order to get a API key
-# needed for this code to work. Save your api key as a FMI_OpenData_Key.txt before running the program.
-# The FMI Open Data service have some restriction on how much you can download at a time.
-# Usage:
-# get_fmi_open_waterlev start_time end_time output_folder_name
-# Usage Example: python get_fmi_sealevels.py 2001 01 01 2001 01 01 FMIdata > retrieve_info.txt
-# Program written by Sanna Särkikoski 30.8.2017 with Python 3.6.1, updated 4.9.2017.
-# Notice: Some firewalls (company, government) may be blocking the download with get from requests so if you repeatedly have problems, 
-# you may need to check if you can download normally for example using your home connection. 
+#Purpose of code is to retrieve FMI Open Data sea level measurements. 
+The service is provided by Finnish
+Meteorological Institute and you can view their product descriptions, lincences etc
+https://en.ilmatieteenlaitos.fi/open-data. This is where you also need to register in order to get a API key
+needed for this code to work. Save your api key as a FMI_OpenData_Key.txt before running the program.
+The FMI Open Data service have some restriction on how much you can download at a time.
+Usage:
+get_fmi_open_waterlev start_time end_time output_folder_name
+Usage Example: python get_fmi_sealevels.py 2001 01 01 2001 01 01 FMIdata > retrieve_info.txt
+Program written by Sanna Särkikoski 30.8.2017 with Python 3.6.1, updated 4.9.2017.
+Notice: Some firewalls (company, government) may be blocking the download with get from requests so if you repeatedly have problems, 
+you may need to check if you can download normally for example using your home connection. 
 
 The data in FMI Open Data Sealevel measurements is tide gauge date from 14 stations:
-Kemi Ajos							65.67291 	24.51526 	100539
-Raahe Lapaluoto 					64.66590 	24.40708 	100540
+Kemi Ajos					65.67291 	24.51526 	100539
+Raahe Lapaluoto 				64.66590 	24.40708 	100540
 Helsinki Kaivopuisto 				60.15363 	24.95622 	132310
-Vaasa Vaskiluoto 					63.08150 	21.57118 	134223
-Rauma Ulko-Petäjäs 					61.13353 	21.42582 	134224
+Vaasa Vaskiluoto 				63.08150 	21.57118 	134223
+Rauma Ulko-Petäjäs 				61.13353 	21.42582 	134224
 Turku Ruissalo Saaronniemi 			60.42828 	22.10053 	134225
-Oulu Toppila 						65.04030 	25.41820 	134248
+Oulu Toppila 					65.04030 	25.41820 	134248
 Pietarsaari Leppäluoto 				63.70857 	22.68958 	134250
-Porvoo Emäsalo						60.20579	25.62509	100669
-Kaskinen Ådskär 					62.34395 	21.21483 	134251
-Föglö Degerby 						60.03188 	20.38482 	134252
+Porvoo Emäsalo					60.20579	25.62509	100669
+Kaskinen Ådskär 				62.34395 	21.21483 	134251
+Föglö Degerby 					60.03188 	20.38482 	134252
 Hanko Pikku Kolalahti 				59.82287 	22.97658 	134253
 Hamina Pitäjänsaari 				60.56277 	27.17920 	134254
 Pori Mäntyluoto Kallo 				61.59438 	21.46343 	134266
@@ -77,9 +78,9 @@ get_fmi_sealevels.py
 		FMI_OpenData_Key.txt (The FMI Open Data Key saved as FMI_OpenData_Key.txt)
 
 
-# Big part of this code was given to me for use.. I have modifield it somewhat for my own puposes. It is for FMI Open Data
-# and spesifically for mareograph observations. At the moment the use is to take a .xml file and then write it to a text file.
-# However in the future, idea would be that no saving of .xml file would be needed.		
+Big part of this code was given to me for use.. I have modifield it somewhat for my own puposes. It is for FMI Open Data
+and spesifically for mareograph observations. At the moment the use is to take a .xml file and then write it to a text file.
+However in the future, idea would be that no saving of .xml file would be needed.		
 		
 tgread_xml.py
 	imports:
